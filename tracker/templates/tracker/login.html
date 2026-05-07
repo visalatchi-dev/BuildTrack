@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildTrack — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+{% load static %}
+<link rel="stylesheet" href="{% static 'tracker/style.css' %}">
+<style>
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:20px;
+  background:#0B1A14;
+}
+.login-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(29,158,117,0.2);
+  border-radius:20px;
+  padding:40px 36px;
+  width:100%;
+  max-width:400px;
+}
+.brand{
+  font-family:'Syne',sans-serif;
+  font-size:26px;
+  font-weight:800;
+  color:#fff;
+  margin-bottom:4px;
+  text-align:center;
+}
+.brand span{color:#1D9E75;}
+.sub{
+  font-size:14px;
+  color:#7A9E8E;
+  margin-bottom:28px;
+  text-align:center;
+}
+.role-label{
+  font-size:12px;
+  color:#7A9E8E;
+  margin-bottom:10px;
+  font-weight:500;
+}
+.role-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:24px;
+}
+.role-option input{display:none;}
+.role-option label{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:14px 8px;
+  border:1px solid rgba(29,158,117,0.2);
+  border-radius:12px;
+  font-size:13px;
+  color:#7A9E8E;
+  cursor:pointer;
+  transition:all .2s;
+  text-align:center;
+}
+.role-option label:hover{
+  border-color:rgba(29,158,117,0.4);
+  color:#E8F0EC;
+}
+.role-option input:checked + label{
+  background:rgba(29,158,117,0.12);
+  border-color:#1D9E75;
+  color:#6EE7B7;
+  font-weight:500;
+}
+.role-icon{font-size:24px;}
+.error-msg{
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.3);
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13px;
+  color:#FCA5A5;
+  margin-bottom:16px;
+  text-align:center;
+}
+.fl{margin-bottom:14px;}
+.fl label{
+  display:block;
+  font-size:12px;
+  color:#7A9E8E;
+  margin-bottom:6px;
+  font-weight:500;
+}
+.fl input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid rgba(29,158,117,0.2);
+  border-radius:10px;
+  background:rgba(255,255,255,0.04);
+  color:#E8F0EC;
+  font-size:14px;
+  font-family:'DM Sans',sans-serif;
+  transition:border-color .2s;
+}
+.fl input:focus{
+  outline:none;
+  border-color:#1D9E75;
+}
+.login-btn{
+  width:100%;
+  padding:13px;
+  background:#1D9E75;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:8px;
+  font-family:'Syne',sans-serif;
+  transition:all .2s;
+}
+.login-btn:hover{background:#0F6E56;transform:translateY(-1px);}
+
+@media(max-width:400px){
+  .login-card{padding:28px 20px;}
+  .brand{font-size:22px;}
+  .role-option label{padding:12px 6px;font-size:12px;}
+  .role-icon{font-size:20px;}
+}
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="brand">Build<span>Track</span></div>
+  <div class="sub">Sign in to your account</div>
+
+  {% if error %}
+  <div class="error-msg">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+    <div class="role-label">Login as</div>
+    <div class="role-grid">
+      <div class="role-option">
+        <input type="radio" name="login_role" id="r-admin" value="admin" checked/>
+        <label for="r-admin"><span class="role-icon">🔑</span>Admin</label>
+      </div>
+      <div class="role-option">
+        <input type="radio" name="login_role" id="r-supervisor" value="supervisor"/>
+        <label for="r-supervisor"><span class="role-icon">👷</span>Supervisor</label>
+      </div>
+      <div class="role-option">
+        <input type="radio" name="login_role" id="r-worker" value="worker"/>
+        <label for="r-worker"><span class="role-icon">🔨</span>Worker</label>
+      </div>
+    </div>
+    <div class="fl">
+      <label>Username</label>
+      <input name="username" type="text" placeholder="Enter username" required autofocus/>
+    </div>
+    <div class="fl">
+      <label>Password</label>
+      <input name="password" type="password" placeholder="Enter password" required/>
+    </div>
+    <button type="submit" class="login-btn">Sign in</button>
+  </form>
+</div>
+</body>
+</html>

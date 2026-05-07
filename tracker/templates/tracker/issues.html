@@ -1,0 +1,189 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title" style="margin:0;">Issues</div>
+  <button class="btn-primary" onclick="document.getElementById('issue-modal').style.display='flex'">+ Report Issue</button>
+</div>
+
+<!-- STATS -->
+<div class="log-stats">
+  <div class="log-stat-card lsc1">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="lsc-value">{{ issues.count }}</div>
+    <div class="lsc-label">Total Issues</div>
+  </div>
+  <div class="log-stat-card lsc4">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <div class="lsc-value">{{ issues_high }}</div>
+    <div class="lsc-label">High Priority</div>
+  </div>
+  <div class="log-stat-card lsc3">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="lsc-value">{{ issues_medium }}</div>
+    <div class="lsc-label">Medium Priority</div>
+  </div>
+  <div class="log-stat-card lsc2">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lsc-value">{{ issues_low }}</div>
+    <div class="lsc-label">Low Priority</div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="issueSearch" placeholder="Search description or project..." oninput="filterIssues()"/>
+  </div>
+  <div class="filter-pills">
+    <button class="fpill active" onclick="setIssueFilter('all', this)">All</button>
+    <button class="fpill fpill-red" onclick="setIssueFilter('high', this)">High</button>
+    <button class="fpill fpill-yellow" onclick="setIssueFilter('medium', this)">Medium</button>
+    <button class="fpill fpill-green" onclick="setIssueFilter('low', this)">Low</button>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="log-table-wrap">
+  <table id="issuesTable">
+    <thead>
+      <tr>
+        <th>Priority</th>
+        <th>Description</th>
+        <th>Project</th>
+        <th>Assigned to</th>
+        <th>Date</th>
+        {% if is_admin %}<th>Action</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for issue in issues %}
+      <tr class="issue-row" data-priority="{{ issue.priority }}" data-search="{{ issue.description|lower }} {{ issue.project.name|lower }}">
+        <td>
+          {% if issue.priority == 'high' %}
+            <span class="log-badge lb-issue">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              High
+            </span>
+          {% elif issue.priority == 'medium' %}
+            <span class="log-badge lb-partial">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Medium
+            </span>
+          {% else %}
+            <span class="log-badge lb-done">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Low
+            </span>
+          {% endif %}
+        </td>
+        <td><div class="log-project">{{ issue.description }}</div></td>
+        <td>
+          <div class="log-date-pill">{{ issue.project.name }}</div>
+        </td>
+        <td>
+          <div class="log-user">
+            <div class="log-avatar">{{ issue.assigned_to|default:"?"|slice:":2"|upper }}</div>
+            <span>{{ issue.assigned_to|default:"Unassigned" }}</span>
+          </div>
+        </td>
+        <td><div class="log-activity">{{ issue.created_at|date:"d M Y" }}</div></td>
+        {% if is_admin %}
+        <td>
+          <a href="/issues/delete/{{ issue.id }}/"
+             onclick="return confirm('Delete this issue?')"
+             class="log-del-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </a>
+        </td>
+        {% endif %}
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">
+          <div class="log-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>No issues reported yet!</div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div id="issueNoResults" class="log-empty" style="display:none;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <div>No matching issues found.</div>
+  </div>
+</div>
+
+<!-- REPORT ISSUE MODAL -->
+<div id="issue-modal" class="modal-bg">
+  <div class="modal">
+    <div class="modal-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" style="margin-right:8px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Report Issue
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Description</label>
+        <input name="description" type="text" placeholder="e.g. Safety railing missing" required/>
+      </div>
+      <div class="form-group">
+        <label>Project</label>
+        <select name="project" required>
+          {% for p in projects %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Priority</label>
+        <select name="priority">
+          <option value="high">⚠️ High</option>
+          <option value="medium">⏳ Medium</option>
+          <option value="low">✅ Low</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Assigned to</label>
+        <input name="assigned_to" type="text" placeholder="e.g. Rajesh K"/>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="document.getElementById('issue-modal').style.display='none'">Cancel</button>
+        <button type="submit" class="btn-save">Report Issue</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+let issueFilter = 'all';
+function setIssueFilter(priority, btn) {
+  issueFilter = priority;
+  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyIssueFilters();
+}
+function filterIssues() { applyIssueFilters(); }
+function applyIssueFilters() {
+  const search = document.getElementById('issueSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('.issue-row');
+  let visible = 0;
+  rows.forEach(row => {
+    const matchP = issueFilter === 'all' || row.dataset.priority === issueFilter;
+    const matchS = !search || row.dataset.search.includes(search);
+    if (matchP && matchS) { row.style.display = ''; visible++; }
+    else row.style.display = 'none';
+  });
+  document.getElementById('issueNoResults').style.display = visible === 0 ? 'flex' : 'none';
+}
+</script>
+{% endblock %}

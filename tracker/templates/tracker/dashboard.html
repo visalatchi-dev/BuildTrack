@@ -1,0 +1,173 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+<div class="page-header">
+  <div class="page-title" style="margin:0;">Dashboard</div>
+  {% if is_admin %}
+  <a href="/projects/add/" class="btn-primary">+ Add Project</a>
+  {% endif %}
+</div>
+
+{% if is_admin %}
+<div class="welcome-card wc-admin" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;">
+  <div class="welcome-left">
+    <div class="avatar-circle">{{ request.user.username|slice:":2"|upper }}</div>
+    <div>
+      <div class="welcome-name">Welcome back, {{ request.user.username }}-Admin</div>
+      <div class="welcome-sub">Full control over all projects, issues, and logs.</div>
+    </div>
+  </div>
+  <span class="role-badge badge-admin">Admin Access</span>
+</div>
+{% endif %}
+
+{% if is_worker %}
+<div class="welcome-card wc-worker" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;">
+  <div class="welcome-left">
+    <div class="avatar-circle av-worker">{{ request.user.username|slice:":2"|upper }}</div>
+    <div>
+      <div class="welcome-name">Welcome, {{ request.user.username }}-Worker</div>
+      <div class="welcome-sub">🛠️ Please contact your supervisor for today's assigned tasks.</div>
+    </div>
+  </div>
+  <span class="role-badge badge-worker">Worker Access</span>
+</div>
+{% elif is_supervisor %}
+<div class="welcome-card wc-supervisor" style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;">
+  <div class="welcome-left">
+    <div class="avatar-circle av-supervisor">{{ request.user.username|slice:":2"|upper }}</div>
+    <div>
+      <div class="welcome-name">Welcome, {{ request.user.username }}-Supervisor</div>
+      <div class="welcome-sub">👷 Managing assigned sites and logs.</div>
+    </div>
+  </div>
+  <span class="role-badge badge-supervisor">Supervisor Access</span>
+</div>
+{% endif %}
+
+<div class="stats-grid">
+  <div class="stat-card sc1">
+    <div class="stat-icon si1">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    <div class="stat-label">Active Projects</div>
+    <div class="stat-value sv1">{{ projects.count }}</div>
+    <div class="stat-trend">Total running</div>
+  </div>
+  <div class="stat-card sc2">
+    <div class="stat-icon si2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="stat-label">Total Workers</div>
+    <div class="stat-value sv2">{{ workers.count }}</div>
+    <div class="stat-trend">On payroll</div>
+  </div>
+  <div class="stat-card sc3">
+    <div class="stat-icon si3">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="stat-label">Open Issues</div>
+    <div class="stat-value sv3">{{ issues.count }}</div>
+    <div class="stat-trend">Needs attention</div>
+  </div>
+  <div class="stat-card sc4">
+    <div class="stat-icon si4">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <div class="stat-label">Daily Logs</div>
+    <div class="stat-value sv4">{{ logs.count }}</div>
+    <div class="stat-trend">Entries total</div>
+  </div>
+</div>
+
+<div class="section-title">Projects Overview</div>
+
+{% for project in projects %}
+<div class="proj-card
+    {% if project.completion == 100 %}pc-completed
+    {% elif project.status == 'ongoing' %}pc-ongoing
+    {% elif project.status == 'delayed' %}pc-delayed
+    {% else %}pc-ontrack
+    {% endif %}">
+  <div class="proj-head">
+    <span class="proj-name">{{ project.name }}</span>
+    {% if project.completion == 100 %}
+      <span class="badge bc">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        Completed
+      </span>
+    {% elif project.status == 'ongoing' %}
+      <span class="badge bg">Ongoing</span>
+    {% elif project.status == 'delayed' %}
+      <span class="badge by">Delayed</span>
+    {% else %}
+      <span class="badge bb">On Track</span>
+    {% endif %}
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill
+        {% if project.completion == 100 %}pf-completed
+        {% elif project.status == 'ongoing' %}pf-green
+        {% elif project.status == 'delayed' %}pf-yellow
+        {% else %}pf-blue
+        {% endif %}"
+      data-width="{{ project.completion }}"
+      id="prog-{{ project.id }}">
+    </div>
+  </div>
+  <div class="proj-meta">
+    <span>{{ project.completion }}% complete</span>
+    <span>Deadline: {{ project.deadline }}</span>
+    <span>{{ project.workers_count }} workers</span>
+  </div>
+  {% if is_admin %}
+  <div class="proj-actions">
+    <a href="/projects/edit/{{ project.id }}/" class="btn-edit">Edit</a>
+    <a href="/projects/delete/{{ project.id }}/"
+       onclick="return confirm('Delete this project?')"
+       class="btn-del">Delete</a>
+  </div>
+  {% endif %}
+</div>
+{% empty %}
+<div class="card empty-msg">No projects yet. Click + Add Project!</div>
+{% endfor %}
+
+<div class="two-col" style="margin-top:12px;">
+  <div class="card">
+    <div class="section-title">Recent Issues</div>
+    {% for issue in issues|slice:":4" %}
+    <div class="row-item">
+      {% if issue.priority == 'high' %}
+        <span class="priority-high">High</span>
+      {% elif issue.priority == 'medium' %}
+        <span class="priority-medium">Medium</span>
+      {% else %}
+        <span class="priority-low">Low</span>
+      {% endif %}
+      <span style="font-size:12px;color:#9ab8aa;">{{ issue.description|truncatechars:50 }}</span>
+    </div>
+    {% empty %}
+    <div class="empty-msg">No issues yet.</div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <div class="section-title">Recent Daily Logs</div>
+    {% for log in logs|slice:":4" %}
+    <div class="row-item">
+      <span class="badge bg log-date">{{ log.date|date:"d M" }}</span>
+      <span style="font-size:12px;color:#9ab8aa;">{{ log.activity }}</span>
+    </div>
+    {% empty %}
+    <div class="empty-msg">No logs yet.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.progress-fill').forEach(function(el) {
+  var w = el.getAttribute('data-width');
+  el.style.width = '0%';
+  setTimeout(function() { el.style.width = w + '%'; }, 200);
+});
+</script>
+{% endblock %}

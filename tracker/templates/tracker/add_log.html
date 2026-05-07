@@ -1,0 +1,48 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title" style="margin:0;">Attendance</div>
+</div>
+
+<div style="display:flex;justify-content:center;">
+  <div class="card" style="width:100%;max-width:500px;padding:20px;">
+
+    <!-- Worker details -->
+    <h3>{{ worker.name }}</h3>
+
+    <p><b>Role:</b> {{ worker.role }}</p>
+    <p><b>Project:</b> {{ worker.project.name }}</p>
+
+    <hr style="margin:15px 0;">
+
+    <!-- Current status -->
+    <p><b>Status:</b>
+      {% if worker.is_present %}
+        <span class="badge badge-green">Present</span>
+      {% else %}
+        <span class="badge badge-red">Absent</span>
+      {% endif %}
+    </p>
+
+    <!-- 🔥 IMPORTANT BUTTON (nee ketta line inga than) -->
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      
+      <a href="{% url 'toggle_attendance' worker.id %}" 
+         class="btn-save" 
+         style="text-decoration:none;">
+        Toggle Attendance
+      </a>
+
+      <a href="/workers/" 
+         class="btn-cancel" 
+         style="text-decoration:none;">
+        Back
+      </a>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,340 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildTrack — Construction Project Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'tracker/landing.css' %}">
+</head>
+<body>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Build<span>Track</span></div>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#features">Features</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="/login/" class="btn-green">Sign in</a>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#" onclick="toggleMenu()">Home</a>
+  <a href="#features" onclick="toggleMenu()">Features</a>
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="/login/" class="mob-signin">Sign in</a>
+</div>
+
+<!-- HERO -->
+<div class="hero-wrap">
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="badge-dot"></span>Construction Project Management</div>
+      <h1>Manage your<br>sites with<br><span class="accent">BuildTrack</span></h1>
+      <p>A centralized platform to track projects, log daily work, manage workers, and resolve site issues — all in one place, accessible from any device.</p>
+      <div class="hero-btns">
+        <a href="/login/" class="cta-primary">Sign in now</a>
+        <a href="#features" class="cta-secondary">See features</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="mockup-wrap">
+        <div class="mockup-topbar">
+          <div class="mockup-logo">Build<span>Track</span></div>
+          <div class="mockup-dots"><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div></div>
+        </div>
+        <div class="mockup-stats">
+          <div class="ms"><div class="ms-val" style="color:#93C5FD;">3</div><div class="ms-lbl">Projects</div></div>
+          <div class="ms"><div class="ms-val" style="color:#6EE7B7;">24</div><div class="ms-lbl">Workers</div></div>
+          <div class="ms"><div class="ms-val" style="color:#FCD34D;">5</div><div class="ms-lbl">Issues</div></div>
+          <div class="ms"><div class="ms-val" style="color:#FCA5A5;">2</div><div class="ms-lbl">Delayed</div></div>
+        </div>
+        <div class="mockup-proj">
+          <div class="mp-head"><span class="mp-name">Madurai Highway Bridge</span><span class="mp-badge mpb-on">ongoing</span></div>
+          <div class="mp-bar"><div class="mp-fill" style="width:64%;background:#1D9E75;"></div></div>
+          <div class="mp-meta"><span>64% complete</span><span>Sep 2026</span><span>12 workers</span></div>
+        </div>
+        <div class="mockup-proj">
+          <div class="mp-head"><span class="mp-name">Chennai Metro Station C4</span><span class="mp-badge mpb-del">delayed</span></div>
+          <div class="mp-bar"><div class="mp-fill" style="width:38%;background:#F59E0B;"></div></div>
+          <div class="mp-meta"><span>38% complete</span><span>Mar 2026</span><span>8 workers</span></div>
+        </div>
+        <div class="mockup-proj">
+          <div class="mp-head"><span class="mp-name">Coimbatore IT Park B</span><span class="mp-badge mpb-on">on track</span></div>
+          <div class="mp-bar"><div class="mp-fill" style="width:81%;background:#3B82F6;"></div></div>
+          <div class="mp-meta"><span>81% complete</span><span>Jun 2026</span><span>4 workers</span></div>
+        </div>
+        <div class="float-card fc1">
+          <div class="fc-label">Workers present</div>
+          <div class="fc-val">24 / 32</div>
+        </div>
+        <div class="float-card fc2">
+          <div class="fc-label">Open issues</div>
+          <div class="fc-val" style="color:#FCD34D;">5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-item reveal">
+      <span class="stat-icon">📉</span>
+      <span class="stat-num">40%</span>
+      <span class="stat-lbl">Less miscommunication</span>
+    </div>
+    <div class="stat-item reveal">
+      <span class="stat-icon">⚡</span>
+      <span class="stat-num">3x</span>
+      <span class="stat-lbl">Faster reporting</span>
+    </div>
+    <div class="stat-item reveal">
+      <span class="stat-icon">🔐</span>
+      <span class="stat-num">3</span>
+      <span class="stat-lbl">Role-based access</span>
+    </div>
+    <div class="stat-item reveal">
+      <span class="stat-icon">📱</span>
+      <span class="stat-num">100%</span>
+      <span class="stat-lbl">Mobile friendly</span>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div id="features" class="section">
+  <div class="sec-tag reveal">Features</div>
+  <div class="sec-h reveal">Everything in one platform</div>
+  <div class="sec-sub reveal">Six core modules to manage your full construction workflow from start to finish.</div>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-img" id="img1"></div>
+      <div class="feat-body">
+        <div class="feat-num">01</div>
+        <div class="feat-title">Multi-site dashboard</div>
+        <div class="feat-desc">Track all projects with live progress bars, deadlines and worker counts.</div>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-img" id="img2"></div>
+      <div class="feat-body">
+        <div class="feat-num">02</div>
+        <div class="feat-title">Daily work log</div>
+        <div class="feat-desc">Log daily activities with Done/Partial/Issue status. Full history maintained.</div>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-img" id="img3"></div>
+      <div class="feat-body">
+        <div class="feat-num">03</div>
+        <div class="feat-title">Issue tracking</div>
+        <div class="feat-desc">Report site issues with priority levels, assign to team and track resolution.</div>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-img" id="img4"></div>
+      <div class="feat-body">
+        <div class="feat-num">04</div>
+        <div class="feat-title">Worker management</div>
+        <div class="feat-desc">Track attendance daily and manage worker roles from one central page.</div>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-img"  id="img5"></div>
+      <div class="feat-body">
+        <div class="feat-num">05</div>
+        <div class="feat-title">Role-based access</div>
+        <div class="feat-desc">Admin, Supervisor, Worker each see different views. Security built in.</div>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-img" id="img6"></div>
+      <div class="feat-body">
+        <div class="feat-num">06</div>
+        <div class="feat-title">Mobile friendly</div>
+        <div class="feat-desc">Fully responsive — works on phone, tablet and desktop from the site itself.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROLES -->
+<div class="roles-section">
+  <div class="roles-inner">
+    <div class="sec-tag reveal">Access control</div>
+    <div class="sec-h reveal">Three roles, three views</div>
+    <div class="sec-sub reveal">Every user sees only what they need. No clutter, no confusion.</div>
+    <div class="roles-grid">
+      <div class="role-card admin reveal">
+        <div class="role-img" id="roleimg1"></div>
+        <div class="role-body">
+          <span class="role-pill rp-admin">Admin</span>
+          <div class="role-title">Full system access</div>
+          <ul class="role-list">
+            <li><span class="chk">✓</span>All projects overview</li>
+            <li><span class="chk">✓</span>Add / edit / delete projects</li>
+            <li><span class="chk">✓</span>Create and manage users</li>
+            <li><span class="chk">✓</span>View all logs and issues</li>
+            <li><span class="chk">✓</span>Worker attendance control</li>
+          </ul>
+        </div>
+      </div>
+      <div class="role-card sup reveal">
+        <div class="role-img" id="roleimg2"></div>
+        <div class="role-body">
+          <span class="role-pill rp-sup">Supervisor</span>
+          <div class="role-title">Assigned site only</div>
+          <ul class="role-list">
+            <li><span class="chk">✓</span>Own site dashboard</li>
+            <li><span class="chk">✓</span>Add daily log entries</li>
+            <li><span class="chk">✓</span>Report and manage issues</li>
+            <li><span class="chk">✓</span>Mark workers present/absent</li>
+            <li><span class="chk">✓</span>No access to other sites</li>
+          </ul>
+        </div>
+      </div>
+      <div class="role-card worker reveal">
+        <div class="role-img" id="roleimg3"></div>
+        <div class="role-body">
+          <span class="role-pill rp-worker">Worker</span>
+          <div class="role-title">Personal view only</div>
+          <ul class="role-list">
+            <li><span class="chk">✓</span>Own dashboard view</li>
+            <li><span class="chk">✓</span>View assigned project</li>
+            <li><span class="chk">✓</span>View daily logs</li>
+            <li><span class="chk">✓</span>No edit permissions</li>
+            <li><span class="chk">✓</span>Mobile optimized</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="sec-tag reveal">How it works</div>
+  <div class="sec-h reveal">Up and running in minutes</div>
+  <div class="sec-sub reveal">Simple 4-step process to get your construction team organized.</div>
+  <div class="timeline">
+    <div class="tl-item reveal">
+      <div class="tl-num">1</div>
+      <div class="tl-content">
+        <div class="tl-title">Admin creates projects</div>
+        <div class="tl-desc">Add construction sites with deadlines, budgets, and worker targets.</div>
+      </div>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-num">2</div>
+      <div class="tl-content">
+        <div class="tl-title">Add team members</div>
+        <div class="tl-desc">Create accounts for supervisors and workers, assign to projects.</div>
+      </div>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-num">3</div>
+      <div class="tl-content">
+        <div class="tl-title">Log daily work</div>
+        <div class="tl-desc">Supervisors update progress, log activities, report issues every day.</div>
+      </div>
+    </div>
+    <div class="tl-item reveal">
+      <div class="tl-num">4</div>
+      <div class="tl-content">
+        <div class="tl-title">Track and improve</div>
+        <div class="tl-desc">Admin monitors all sites from one dashboard and resolves issues fast.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="about" class="section">
+  <div class="sec-tag reveal">About</div>
+  <div class="sec-h reveal">Who We Are</div>
+
+  <div class="about-box reveal">
+    <p class="about-text">
+      We are a passionate team focused on improving construction site management through simple and effective digital solutions. 
+      Based in Tamil Nadu, we aim to help construction teams reduce miscommunication, improve productivity, and manage projects more efficiently. 
+      Our platform, BuildTrack, is designed with real-world site challenges in mind, making it easy for admins, supervisors, and workers to collaborate seamlessly.
+    </p>
+  </div>
+</div>
+<!-- CONTACT -->
+<div id="contact" class="contact-section">
+  <div class="contact-inner">
+    <div class="contact-left reveal">
+      <div class="sec-tag">Contact & Access</div>
+      <h2>Ready to manage your construction sites?</h2>
+      <p>BuildTrack is used by construction teams across Tamil Nadu to manage projects, track workers, and resolve site issues in real time.</p>
+      <div class="contact-items">
+        <div class="contact-item">
+          <div class="ci-icon">📍</div>
+          <div><div class="ci-label">Location</div><div class="ci-val">Tamil Nadu, India</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">🏗️</div>
+          <div><div class="ci-label">Platform</div><div class="ci-val">Web-based · Mobile friendly</div></div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">👥</div>
+          <div><div class="ci-label">Users</div><div class="ci-val">Admin · Supervisor · Worker</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-right reveal">
+      <h3>Sign in to BuildTrack</h3>
+      <p>Your account is managed by your admin. Contact your site admin for login credentials.</p>
+      <a href="/login/" class="signin-big">Sign in now →</a>
+      <div class="signin-note">Access controlled by your organization admin</div>
+      <div class="contact-features">
+        <div class="cf-item"><span class="cf-dot"></span>Role-based dashboard on login</div>
+        <div class="cf-item"><span class="cf-dot"></span>Secure session management</div>
+        <div class="cf-item"><span class="cf-dot"></span>Works on all devices</div>
+        <div class="cf-item"><span class="cf-dot"></span>Real-time project tracking</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Build<span>Track</span></div>
+  <div class="footer-copy">Construction Project Tracker · 2026</div>
+</footer>
+
+<script>
+function toggleMenu(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(e){
+  var menu = document.getElementById('mobile-menu');
+  var hamburger = document.getElementById('hamburger');
+  if(menu.classList.contains('open') && !menu.contains(e.target) && !hamburger.contains(e.target)){
+    menu.classList.remove('open');
+    hamburger.classList.remove('open');
+  }
+});
+
+// Scroll reveal
+function revealOnScroll(){
+  document.querySelectorAll('.reveal').forEach(el => {
+    if(el.getBoundingClientRect().top < window.innerHeight - 80){
+      el.classList.add('active');
+    }
+  });
+}
+window.addEventListener('scroll', revealOnScroll);
+window.addEventListener('load', revealOnScroll);
+</script>
+</body>
+</html>

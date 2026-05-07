@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildTrack</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'tracker/style.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+<nav>
+  <div class="nav-logo">Build<span>Track</span></div>
+  <div class="nav-links">
+    <a href="/dashboard/" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>Dashboard</a>
+    <a href="/daily-log/" {% if request.resolver_match.url_name == 'daily_log' %}class="active"{% endif %}>Daily Log</a>
+    <a href="/issues/" {% if request.resolver_match.url_name == 'issues' %}class="active"{% endif %}>Issues</a>
+    <a href="/workers/" {% if request.resolver_match.url_name == 'workers' %}class="active"{% endif %}>Workers</a>
+    {% if user.is_superuser %}
+    <a href="/users/" {% if request.resolver_match.url_name == 'users_list' %}class="active"{% endif %}>Users</a>
+    {% endif %}
+  </div>
+  <div class="nav-right">
+    <span class="role-tag">{{ user.username }}</span>
+    <a href="/logout/" class="logout-btn">Logout</a>
+  </div>
+  <!-- HAMBURGER -->
+  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobile-nav">
+  <div class="mob-user">
+    <div class="mob-av">{{ user.username|slice:":2"|upper }}</div>
+    <div>
+      <div class="mob-uname">{{ user.username }}</div>
+      <div class="mob-role">
+        {% if user.is_superuser %}Admin
+        {% elif user.groups.all.0.name %}{{ user.groups.all.0.name }}
+        {% else %}Viewer{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="mob-divider"></div>
+  <a href="/dashboard/" onclick="closeMobileNav()" {% if request.resolver_match.url_name == 'dashboard' %}class="active"{% endif %}>📊 Dashboard</a>
+  <a href="/daily-log/" onclick="closeMobileNav()" {% if request.resolver_match.url_name == 'daily_log' %}class="active"{% endif %}>📋 Daily Log</a>
+  <a href="/issues/" onclick="closeMobileNav()" {% if request.resolver_match.url_name == 'issues' %}class="active"{% endif %}>⚠️ Issues</a>
+  <a href="/workers/" onclick="closeMobileNav()" {% if request.resolver_match.url_name == 'workers' %}class="active"{% endif %}>👷 Workers</a>
+  {% if user.is_superuser %}
+  <a href="/users/" onclick="closeMobileNav()" {% if request.resolver_match.url_name == 'users_list' %}class="active"{% endif %}>👥 Users</a>
+  {% endif %}
+  <div class="mob-divider"></div>
+  <a href="/logout/" class="mob-logout">🚪 Logout</a>
+</div>
+{% endif %}
+
+<div class="body">
+{% block content %}{% endblock %}
+</div>
+
+<script>
+function toggleMobileNav(){
+  document.getElementById('hamburger').classList.toggle('open');
+  document.getElementById('mobile-nav').classList.toggle('open');
+}
+function closeMobileNav(){
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobile-nav').classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  var nav = document.getElementById('mobile-nav');
+  var hamburger = document.getElementById('hamburger');
+  if(nav && nav.classList.contains('open') && !nav.contains(e.target) && !hamburger.contains(e.target)){
+    closeMobileNav();
+  }
+});
+</script>
+</body>
+</html>

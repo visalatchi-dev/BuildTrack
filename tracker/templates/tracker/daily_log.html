@@ -1,0 +1,206 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title" style="margin:0;">Daily Logs</div>
+  <button class="btn-primary" onclick="document.getElementById('add-modal').style.display='flex'">+ Add Log</button>
+</div>
+
+<!-- STATS ROW -->
+<div class="log-stats">
+  <div class="log-stat-card lsc1">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    <div class="lsc-value">{{ logs.count }}</div>
+    <div class="lsc-label">Total Logs</div>
+  </div>
+  <div class="log-stat-card lsc2">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="lsc-value">{{ logs_done }}</div>
+    <div class="lsc-label">Done</div>
+  </div>
+  <div class="log-stat-card lsc3">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="lsc-value">{{ logs_partial }}</div>
+    <div class="lsc-label">Partial</div>
+  </div>
+  <div class="log-stat-card lsc4">
+    <div class="lsc-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="lsc-value">{{ logs_issue }}</div>
+    <div class="lsc-label">Issues</div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search activity or project..." oninput="filterLogs()"/>
+  </div>
+  <div class="filter-pills">
+    <button class="fpill active" onclick="setFilter('all', this)">All</button>
+    <button class="fpill fpill-green" onclick="setFilter('done', this)">Done</button>
+    <button class="fpill fpill-yellow" onclick="setFilter('partial', this)">Partial</button>
+    <button class="fpill fpill-red" onclick="setFilter('issue', this)">Issue</button>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="log-table-wrap">
+  <table id="logsTable">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Project</th>
+        <th>Activity</th>
+        <th>Logged by</th>
+        <th>Status</th>
+        {% if is_admin %}
+        <th>Action</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr class="log-row" data-status="{{ log.status }}" data-search="{{ log.activity|lower }} {{ log.project.name|lower }}">
+        <td>
+          <div class="log-date-pill">{{ log.date|date:"d M Y" }}</div>
+        </td>
+        <td>
+          <div class="log-project">{{ log.project.name }}</div>
+        </td>
+        <td>
+          <div class="log-activity">{{ log.activity }}</div>
+        </td>
+        <td>
+          <div class="log-user">
+            <div class="log-avatar">{{ log.logged_by.username|slice:":2"|upper }}</div>
+            <span>{{ log.logged_by.username }}</span>
+          </div>
+        </td>
+        <td>
+          {% if log.status == 'done' %}
+            <span class="log-badge lb-done">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Done
+            </span>
+          {% elif log.status == 'partial' %}
+            <span class="log-badge lb-partial">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Partial
+            </span>
+          {% else %}
+            <span class="log-badge lb-issue">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Issue
+            </span>
+          {% endif %}
+        </td>
+        {% if is_admin %}
+        <td>
+          <div class="log-actions">
+            <a href="/daily-log/delete/{{ log.id }}/"
+               onclick="return confirm('Delete this log?')"
+               class="log-del-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </a>
+          </div>
+        </td>
+        {% endif %}
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">
+          <div class="log-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <div>No logs yet. Add your first log!</div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div id="noResults" class="log-empty" style="display:none;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <div>No matching logs found.</div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div id="add-modal" class="modal-bg">
+  <div class="modal">
+    <div class="modal-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" stroke-width="2.5" style="margin-right:8px;vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Add Log Entry
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Activity</label>
+        <input name="activity" type="text" placeholder="e.g. Concrete pouring" required/>
+      </div>
+      <div class="form-group">
+        <label>Project</label>
+        <select name="project" required>
+          {% for p in projects %}<option value="{{ p.id }}">{{ p.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="done">✅ Done</option>
+          <option value="partial">⏳ Partial</option>
+          <option value="issue">⚠️ Issue</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="document.getElementById('add-modal').style.display='none'">Cancel</button>
+        <button type="submit" class="btn-save">Save Log</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+let currentFilter = 'all';
+
+function setFilter(status, btn) {
+  currentFilter = status;
+  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function filterLogs() {
+  applyFilters();
+}
+
+function applyFilters() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const rows = document.querySelectorAll('.log-row');
+  let visible = 0;
+
+  rows.forEach(row => {
+    const matchStatus = currentFilter === 'all' || row.dataset.status === currentFilter;
+    const matchSearch = !search || row.dataset.search.includes(search);
+    if (matchStatus && matchSearch) {
+      row.style.display = '';
+      visible++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  document.getElementById('noResults').style.display = visible === 0 ? 'flex' : 'none';
+}
+</script>
+
+{% endblock %}

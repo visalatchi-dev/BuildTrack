@@ -1,0 +1,133 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title" style="margin:0;">Workers</div>
+  {% if is_admin or is_supervisor %}
+  <a href="{% url 'bulk_attendance' %}" class="btn-primary">Mark Attendance</a>
+  {% endif %}
+</div>
+
+<!-- STATS -->
+<div class="workers-stats-grid">
+  <div class="w-stat-card wsc1">
+    <div class="w-stat-icon wsi1">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <div class="w-stat-value wsv1">{{ workers.count }}</div>
+    <div class="w-stat-label">Total Workers</div>
+  </div>
+  <div class="w-stat-card wsc2">
+    <div class="w-stat-icon wsi2">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="w-stat-value wsv2">{{ present_count }}</div>
+    <div class="w-stat-label">Present Today</div>
+  </div>
+  <div class="w-stat-card wsc3">
+    <div class="w-stat-icon wsi3">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    </div>
+    <div class="w-stat-value wsv3">{{ absent_count }}</div>
+    <div class="w-stat-label">Absent Today</div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-search">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="workerSearch" placeholder="Search name or project..." oninput="filterWorkers()"/>
+  </div>
+  <div class="filter-pills">
+    <button class="fpill active" onclick="setWorkerFilter('all', this)">All</button>
+    <button class="fpill fpill-green" onclick="setWorkerFilter('present', this)">Present</button>
+    <button class="fpill fpill-red" onclick="setWorkerFilter('absent', this)">Absent</button>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="log-table-wrap">
+  <table id="workersTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Project</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for worker in workers %}
+      <tr class="worker-row"
+          data-status="{% if worker.is_present %}present{% else %}absent{% endif %}"
+          data-search="{{ worker.name|lower }} {{ worker.project.name|lower }}">
+        <td>
+          <div class="log-user">
+            <div class="log-avatar">{{ worker.name|slice:":2"|upper }}</div>
+            <span class="log-project">{{ worker.name }}</span>
+          </div>
+        </td>
+        <td>
+          {% if worker.role == 'Supervisor' %}
+            <span class="log-badge lb-partial">{{ worker.role }}</span>
+          {% else %}
+            <span class="log-badge lb-done">{{ worker.role }}</span>
+          {% endif %}
+        </td>
+        <td><div class="log-date-pill">{{ worker.project.name }}</div></td>
+        <td>
+          {% if worker.is_present %}
+            <span class="log-badge lb-done">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Present
+            </span>
+          {% else %}
+            <span class="log-badge lb-issue">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Absent
+            </span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">
+          <div class="log-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            <div>No workers yet!</div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div id="workerNoResults" class="log-empty" style="display:none;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <div>No matching workers found.</div>
+  </div>
+</div>
+
+<script>
+let workerFilter = 'all';
+function setWorkerFilter(status, btn) {
+  workerFilter = status;
+  document.querySelectorAll('.fpill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyWorkerFilters();
+}
+function filterWorkers() { applyWorkerFilters(); }
+function applyWorkerFilters() {
+  const search = document.getElementById('workerSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('.worker-row');
+  let visible = 0;
+  rows.forEach(row => {
+    const matchS = workerFilter === 'all' || row.dataset.status === workerFilter;
+    const matchQ = !search || row.dataset.search.includes(search);
+    if (matchS && matchQ) { row.style.display = ''; visible++; }
+    else row.style.display = 'none';
+  });
+  document.getElementById('workerNoResults').style.display = visible === 0 ? 'flex' : 'none';
+}
+</script>
+{% endblock %}

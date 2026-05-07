@@ -1,0 +1,48 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+
+<div class="page-header">
+  <div class="page-title" style="margin:0;">{{ action }} Project</div>
+</div>
+
+<div style="display:flex;justify-content:center;">
+  <div class="card" style="width:100%;max-width:520px;">
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label>Project Name</label>
+        <input name="name" type="text" placeholder="e.g. Madurai Highway Bridge" required
+          value="{{ project.name|default:'' }}"/>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="ongoing" {% if project.status == 'ongoing' %}selected{% endif %}>Ongoing</option>
+          <option value="delayed" {% if project.status == 'delayed' %}selected{% endif %}>Delayed</option>
+          <option value="ontrack" {% if project.status == 'ontrack' %}selected{% endif %}>On Track</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Deadline</label>
+        <input name="deadline" type="text" placeholder="e.g. Sep 2026"
+          value="{{ project.deadline|default:'' }}"/>
+      </div>
+      <div class="form-group">
+        <label>Completion (%)</label>
+        <input name="completion" type="number" min="0" max="100" placeholder="e.g. 64"
+          value="{{ project.completion|default:0 }}"/>
+      </div>
+      <div class="form-group">
+        <label>Workers Count</label>
+        <input name="workers_count" type="number" min="0" placeholder="e.g. 12"
+          value="{{ project.workers_count|default:0 }}"/>
+      </div>
+      <div class="modal-actions">
+        <a href="/" class="btn-cancel" style="text-align:center;text-decoration:none;">Cancel</a>
+        <button type="submit" class="btn-save">{{ action }} Project</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
