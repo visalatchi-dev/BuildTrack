@@ -293,10 +293,17 @@ footer{background:#071210;border-top:1px solid rgba(29,158,117,0.1);padding:28px
   .hero-right{display:none;}
   .cta-primary,.cta-secondary{padding:12px 24px;font-size:14px;}
 
-  .stats-bar{grid-template-columns:repeat(2,1fr);padding:24px 20px 40px;gap:12px;}
+ .stats-bar{
+    grid-template-columns:repeat(2,1fr);
+    padding:20px 16px 36px;
+    gap:10px;
+    margin:0;
+  }
+  .stat-item{padding:16px 12px;}
   .stat-num{font-size:26px;}
-  .stat-icon{font-size:20px;}
-  .stat-item{padding:18px 12px;}
+  .stat-icon{font-size:18px;}
+  .stat-lbl{font-size:10px;}
+
 
   .section{padding:48px 20px;}
   .features-grid{grid-template-columns:1fr;}
